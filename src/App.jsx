@@ -1,17 +1,17 @@
 import { useMemo, useRef, useState } from 'react';
-import StartButton from './components/StartButton';
-import ParticleCanvas from './components/ParticleCanvas';
 import AudioToggle from './components/AudioToggle';
-import { useMemo, useState } from 'react';
-import StartButton from './components/StartButton';
-import ParticleCanvas from './components/ParticleCanvas';
-import TextSequence from './components/TextSequence';
 import HeartMessage from './components/HeartMessage';
+import ParticleCanvas from './components/ParticleCanvas';
+import StartButton from './components/StartButton';
 
 function App() {
-  const texts = useMemo(() => ['Te amo', 'mi niña', 'preciosa', 'gracias', 'por existir'], []);
+  const texts = useMemo(
+    () => ['Te amo', 'mi niña', 'preciosa', 'gracias', 'por existir'],
+    []
+  );
   const [started, setStarted] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  const [heartMode, setHeartMode] = useState(false);
   const audioRef = useRef(null);
 
   const syncAudio = async (enabled) => {
@@ -50,22 +50,13 @@ function App() {
 
       {!started && <StartButton onStart={handleStart} />}
 
-      <ParticleCanvas started={started} texts={texts} />
-  const [currentText, setCurrentText] = useState('');
-  const [heartMode, setHeartMode] = useState(false);
-
-  return (
-    <main className="app-shell">
-      {!started && <StartButton onStart={() => setStarted(true)} />}
-
       <ParticleCanvas
         started={started}
         texts={texts}
-        onTextChange={setCurrentText}
         onHeartMode={setHeartMode}
+        onTextChange={() => {}}
       />
 
-      {started && !heartMode && <TextSequence text={currentText} />}
       {started && heartMode && <HeartMessage />}
     </main>
   );

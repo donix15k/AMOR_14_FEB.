@@ -1,21 +1,17 @@
 import { useEffect, useRef } from 'react';
 
-const SHAPE_PARTICLE_COUNT = 1300;
+const SHAPE_PARTICLE_COUNT = 2200;
 const AMBIENT_PARTICLE_COUNT = 220;
 const TEXT_HOLD_MS = 2400;
 const FLOATING_MS = 900;
 
 const PALETTES = [
-  ['#ff4d4d', '#ff6a3d', '#ff9f43', '#ffd166'],
-  ['#ff2e63', '#ff7b54', '#ffd166', '#f9f871'],
-  ['#ff6f91', '#ff9671', '#ffc75f', '#f9f871'],
-  ['#f94144', '#f3722c', '#f9844a', '#f9c74f'],
-  ['#ff3c78', '#ff8a5b', '#ffd166', '#fff275'],
+  ['#ff2d55', '#ff7a00', '#ffe66d', '#ffffff'],
+  ['#00d4ff', '#0077ff', '#00f5d4', '#e0fbfc'],
+  ['#b5179e', '#f72585', '#4cc9f0', '#f1faee'],
+  ['#ff006e', '#8338ec', '#3a86ff', '#ffbe0b'],
+  ['#00f5d4', '#9b5de5', '#f15bb5', '#fee440'],
 ];
-const PARTICLE_COUNT = 1200;
-const TEXT_HOLD_MS = 2200;
-const FLOATING_MS = 900;
-const WARM_COLORS = ['#ff4d4d', '#ff6a3d', '#ff7f50', '#ff9a3c', '#ffb347'];
 
 function random(min, max) {
   return Math.random() * (max - min) + min;
@@ -36,26 +32,22 @@ function createTextTargets(text, width, height) {
 
   const ctx = canvas.getContext('2d');
   const fontSize = clamp(Math.floor(width * 0.13), 42, 128);
-  const fontSize = clamp(Math.floor(width * 0.12), 38, 120);
 
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `800 ${fontSize}px system-ui, sans-serif`;
-  ctx.font = `700 ${fontSize}px system-ui, sans-serif`;
   ctx.fillText(text, width / 2, height / 2);
 
   const image = ctx.getImageData(0, 0, width, height).data;
   const points = [];
-  const step = Math.max(3, Math.floor(width / 220));
-  const step = Math.max(4, Math.floor(width / 180));
+  const step = Math.max(2, Math.floor(width / 300));
 
   for (let y = 0; y < height; y += step) {
     for (let x = 0; x < width; x += step) {
       const alpha = image[(y * width + x) * 4 + 3];
       if (alpha > 100) {
-      if (alpha > 120) {
         points.push({ x, y });
       }
     }
@@ -99,37 +91,11 @@ function createFilledHeartTargets(width, height, amount) {
   return points;
 }
 
-function ParticleCanvas({ started, texts }) {
+function ParticleCanvas({ started, texts, onTextChange, onHeartMode, onColorChange }) {
   const canvasRef = useRef(null);
   const frameRef = useRef(0);
   const particlesRef = useRef([]);
   const ambientRef = useRef([]);
-function createHeartTargets(width, height, amount) {
-  const targets = [];
-  const scale = Math.min(width, height) / 42;
-
-  for (let i = 0; i < amount; i += 1) {
-    const t = (i / amount) * Math.PI * 2;
-    const x = 16 * Math.sin(t) ** 3;
-    const y =
-      13 * Math.cos(t) -
-      5 * Math.cos(2 * t) -
-      2 * Math.cos(3 * t) -
-      Math.cos(4 * t);
-
-    targets.push({
-      x: width / 2 + x * scale,
-      y: height / 2 - y * scale * 0.9,
-    });
-  }
-
-  return targets;
-}
-
-function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
-  const canvasRef = useRef(null);
-  const frameRef = useRef(0);
-  const particlesRef = useRef([]);
   const modeRef = useRef('idle');
   const timerRef = useRef(0);
   const textIndexRef = useRef(-1);
@@ -139,11 +105,6 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
 
   useEffect(() => {
     if (!started) return undefined;
-
-  useEffect(() => {
-    if (!started) {
-      return undefined;
-    }
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -164,14 +125,12 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
 
       if (particlesRef.current.length === 0) {
         particlesRef.current = Array.from({ length: SHAPE_PARTICLE_COUNT }, () => ({
-        particlesRef.current = Array.from({ length: PARTICLE_COUNT }, () => ({
           x: random(0, canvas.width),
           y: random(0, canvas.height),
           vx: random(-0.25, 0.25),
           vy: random(-0.25, 0.25),
           color: colorFromPalette(paletteRef.current),
-          color: WARM_COLORS[Math.floor(random(0, WARM_COLORS.length))],
-          size: random(1.2, 2.8),
+          size: random(1.1, 2.7),
         }));
       }
 
@@ -188,30 +147,6 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
       }
 
       if (modeRef.current === 'text' && textIndexRef.current >= 0) {
-        targetsRef.current = createTextTargets(texts[textIndexRef.current], canvas.width, canvas.height);
-      }
-
-      if (modeRef.current === 'heart') {
-        targetsRef.current = createFilledHeartTargets(canvas.width, canvas.height, SHAPE_PARTICLE_COUNT);
-      }
-    };
-
-    const setNextStep = () => {
-      textIndexRef.current += 1;
-
-      if (textIndexRef.current < texts.length) {
-        modeRef.current = 'text';
-        timerRef.current = performance.now();
-        paletteRef.current = PALETTES[textIndexRef.current % PALETTES.length];
-        recolorAll(paletteRef.current);
-        targetsRef.current = createTextTargets(texts[textIndexRef.current], canvas.width, canvas.height);
-      } else {
-        modeRef.current = 'heart';
-        timerRef.current = performance.now();
-        paletteRef.current = ['#ff2d55', '#ff6f61', '#ff8fab', '#ffd6a5'];
-        recolorAll(paletteRef.current);
-        targetsRef.current = createFilledHeartTargets(canvas.width, canvas.height, SHAPE_PARTICLE_COUNT);
-      if (modeRef.current === 'text' && textIndexRef.current >= 0) {
         targetsRef.current = createTextTargets(
           texts[textIndexRef.current],
           canvas.width,
@@ -220,10 +155,10 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
       }
 
       if (modeRef.current === 'heart') {
-        targetsRef.current = createHeartTargets(
+        targetsRef.current = createFilledHeartTargets(
           canvas.width,
           canvas.height,
-          PARTICLE_COUNT
+          SHAPE_PARTICLE_COUNT
         );
       }
     };
@@ -234,15 +169,29 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
         modeRef.current = 'text';
         timerRef.current = performance.now();
         const newText = texts[textIndexRef.current];
+        paletteRef.current = PALETTES[textIndexRef.current % PALETTES.length];
+        recolorAll(paletteRef.current);
+        if (onColorChange) {
+          onColorChange(paletteRef.current[0]);
+        }
         onTextChange(newText);
         onHeartMode(false);
         targetsRef.current = createTextTargets(newText, canvas.width, canvas.height);
       } else {
         modeRef.current = 'heart';
         timerRef.current = performance.now();
+        paletteRef.current = ['#ff2d55', '#ff6f61', '#ffd6a5', '#ffffff'];
+        recolorAll(paletteRef.current);
+        if (onColorChange) {
+          onColorChange(paletteRef.current[0]);
+        }
         onTextChange('');
         onHeartMode(true);
-        targetsRef.current = createHeartTargets(canvas.width, canvas.height, PARTICLE_COUNT);
+        targetsRef.current = createFilledHeartTargets(
+          canvas.width,
+          canvas.height,
+          SHAPE_PARTICLE_COUNT
+        );
       }
     };
 
@@ -255,11 +204,11 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
       const height = canvas.height;
 
       if (modeRef.current === 'floating' && timestamp - timerRef.current > FLOATING_MS) {
-        setNextStep();
+        setNextText();
       }
 
       if (modeRef.current === 'text' && timestamp - timerRef.current > TEXT_HOLD_MS) {
-        setNextStep();
+        setNextText();
       }
 
       const pulse = modeRef.current === 'heart' ? 1 + Math.sin(timestamp * 0.0042) * 0.08 : 1;
@@ -289,26 +238,13 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
       }
 
       ctx.globalAlpha = 1;
-        setNextText();
-      }
-
-      if (modeRef.current === 'text' && timestamp - timerRef.current > TEXT_HOLD_MS) {
-        setNextText();
-      }
-
-      let pulse = 1;
-      if (modeRef.current === 'heart') {
-        pulse = 1 + Math.sin(timestamp * 0.004) * 0.05;
-      }
-
-      ctx.clearRect(0, 0, width, height);
 
       for (let i = 0; i < particles.length; i += 1) {
         const p = particles[i];
 
         if (modeRef.current === 'floating' || modeRef.current === 'idle') {
-          p.vx += random(-0.02, 0.02);
-          p.vy += random(-0.02, 0.02);
+          p.vx += random(-0.012, 0.012);
+          p.vy += random(-0.012, 0.012);
         }
 
         if ((modeRef.current === 'text' || modeRef.current === 'heart') && targets.length > 0) {
@@ -316,17 +252,14 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
           const tx = modeRef.current === 'heart' ? width / 2 + (t.x - width / 2) * pulse : t.x;
           const ty = modeRef.current === 'heart' ? height / 2 + (t.y - height / 2) * pulse : t.y;
 
-          p.vx += (tx - p.x) * 0.013;
-          p.vy += (ty - p.y) * 0.013;
-          p.vx += (tx - p.x) * 0.012;
-          p.vy += (ty - p.y) * 0.012;
+          p.vx += (tx - p.x) * 0.02;
+          p.vy += (ty - p.y) * 0.02;
         }
 
         if (mouse.active) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
           const dist = Math.hypot(dx, dy);
-          const radius = 130;
           const radius = 120;
 
           if (dist < radius && dist > 0.0001) {
@@ -336,8 +269,8 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
           }
         }
 
-        p.vx *= 0.91;
-        p.vy *= 0.91;
+        p.vx *= 0.88;
+        p.vy *= 0.88;
 
         p.x += p.vx;
         p.y += p.vy;
@@ -383,10 +316,15 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode }) {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseleave', onMouseLeave);
     };
-  }, [started, texts]);
-  }, [onHeartMode, onTextChange, started, texts]);
+  }, [onColorChange, onHeartMode, onTextChange, started, texts]);
 
-  return <canvas ref={canvasRef} className="particle-canvas" aria-label="Animación de partículas" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="particle-canvas"
+      aria-label="Animación de partículas"
+    />
+  );
 }
 
 export default ParticleCanvas;
