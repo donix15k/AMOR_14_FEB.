@@ -1,0 +1,10 @@
+Coloca aquí tu archivo de audio real con este nombre exacto:
+
+musica.mp3
+
+Ruta final esperada:
+public/musica.mp3
+
+Notas:
+- Se recomienda un MP3 corto en loop.
+- Puedes reemplazarlo cuando quieras por otra canción manteniendo el mismo nombre.
