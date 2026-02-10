@@ -1,0 +1,94 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+html,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.app-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 20% 10%, #2f0d12 0, #14060a 45%, #090204 100%);
+}
+
+.particle-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.center-layer {
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.start-button {
+  pointer-events: auto;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 34px;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #ff4d4d, #ff9a3c);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(255, 90, 40, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.start-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 34px rgba(255, 90, 40, 0.45);
+}
+
+.audio-toggle {
+  position: absolute;
+  top: clamp(12px, 2vw, 20px);
+  right: clamp(12px, 2vw, 24px);
+  z-index: 4;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: rgba(18, 7, 10, 0.55);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.audio-toggle:hover {
+  transform: scale(1.06);
+  background: rgba(255, 90, 75, 0.35);
+}
+
+.speaker-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
