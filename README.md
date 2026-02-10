@@ -23,6 +23,7 @@ Antes de ejecutar, agrega tu música aquí:
 
 - Archivo: `public/musica.mp3`
 - Ya tienes una guía en: `public/musica.example.txt`
+5. Termina formando un corazón animado con pulsación suave.
 
 ## Ejecutar localmente
 
@@ -32,3 +33,10 @@ npm run dev
 ```
 
 Abre el enlace que te muestra Vite (normalmente `http://localhost:5173`).
+
+## Estructura
+
+- `src/components/StartButton.jsx`: botón inicial.
+- `src/components/TextSequence.jsx`: texto animado en secuencia.
+- `src/components/HeartMessage.jsx`: mensaje final durante corazón.
+- `src/components/ParticleCanvas.jsx`: lógica de partículas, texto, interacción de mouse y corazón.
