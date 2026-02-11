@@ -44,7 +44,7 @@ function App() {
 
   return (
     <main className="app-shell">
-      <audio ref={audioRef} src="/musica.mp3" loop autoPlay preload="auto" />
+      <audio ref={audioRef} src="Grover Washington JR. - Just the two of us [ Traducida al español ].mp3" loop autoPlay preload="auto" />
 
       <AudioToggle enabled={audioEnabled} onToggle={handleToggleAudio} />
 
