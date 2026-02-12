@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-const SHAPE_PARTICLE_COUNT = 2200;
+const SHAPE_PARTICLE_COUNT = 2800;
 const AMBIENT_PARTICLE_COUNT = 220;
 const TEXT_HOLD_MS = 2400;
 const FLOATING_MS = 900;
@@ -31,7 +31,7 @@ function createTextTargets(text, width, height) {
   canvas.height = height;
 
   const ctx = canvas.getContext('2d');
-  const fontSize = clamp(Math.floor(width * 0.13), 42, 128);
+  const fontSize = clamp(Math.floor(width * 0.15), 48, 138);
 
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = '#ffffff';
@@ -42,12 +42,12 @@ function createTextTargets(text, width, height) {
 
   const image = ctx.getImageData(0, 0, width, height).data;
   const points = [];
-  const step = Math.max(2, Math.floor(width / 300));
+  const step = Math.max(1, Math.floor(width / 420));
 
   for (let y = 0; y < height; y += step) {
     for (let x = 0; x < width; x += step) {
       const alpha = image[(y * width + x) * 4 + 3];
-      if (alpha > 100) {
+      if (alpha > 70) {
         points.push({ x, y });
       }
     }
@@ -252,8 +252,19 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode, onColorChan
           const tx = modeRef.current === 'heart' ? width / 2 + (t.x - width / 2) * pulse : t.x;
           const ty = modeRef.current === 'heart' ? height / 2 + (t.y - height / 2) * pulse : t.y;
 
-          p.vx += (tx - p.x) * 0.02;
-          p.vy += (ty - p.y) * 0.02;
+          const pull = modeRef.current === 'text' ? 0.03 : 0.02;
+          p.vx += (tx - p.x) * pull;
+          p.vy += (ty - p.y) * pull;
+
+          if (modeRef.current === 'text') {
+            const dx = tx - p.x;
+            const dy = ty - p.y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < 2.25) {
+              p.vx *= 0.35;
+              p.vy *= 0.35;
+            }
+          }
         }
 
         if (mouse.active) {
@@ -269,8 +280,9 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode, onColorChan
           }
         }
 
-        p.vx *= 0.88;
-        p.vy *= 0.88;
+        const drag = modeRef.current === 'text' ? 0.84 : 0.88;
+        p.vx *= drag;
+        p.vy *= drag;
 
         p.x += p.vx;
         p.y += p.vy;
