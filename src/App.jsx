@@ -7,7 +7,7 @@ import StartButton from './components/StartButton';
 function App() {
   const audioSrc = `${import.meta.env.BASE_URL}musica.mp3`;
   const texts = useMemo(
-    () => ['perra', 'juagaremos un', 'pay', 'gracias', 'por existir', 'chiquita'],
+    () => ['oyeeeeee', 'juagaremos un', 'pay', 'gracias', 'por existir', 'chiquita'],
     []
   );
   const [started, setStarted] = useState(false);

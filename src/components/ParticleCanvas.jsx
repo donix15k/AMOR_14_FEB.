@@ -248,7 +248,13 @@ function ParticleCanvas({ started, texts, onTextChange, onHeartMode, onColorChan
         }
 
         if ((modeRef.current === 'text' || modeRef.current === 'heart') && targets.length > 0) {
-          const t = targets[i % targets.length];
+          // Distribute particles across the whole target set. This avoids
+          // clipping when target points are more than particle count.
+          const targetIndex =
+            targets.length > particles.length
+              ? Math.floor((i / particles.length) * targets.length)
+              : i % targets.length;
+          const t = targets[targetIndex];
           const tx = modeRef.current === 'heart' ? width / 2 + (t.x - width / 2) * pulse : t.x;
           const ty = modeRef.current === 'heart' ? height / 2 + (t.y - height / 2) * pulse : t.y;
 
